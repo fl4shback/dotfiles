@@ -1,0 +1,8 @@
+#Project related files
+Brewfile.lock.json
+tests.sh
+.extras
+backup
+
+#macOS Files
+.DS_Store

@@ -1,0 +1,8 @@
+[gpg]
+	program = gpg
+[commit]
+	gpgSign = true
+[tag]
+	forceSignAnnotated = true
+[init]
+	defaultBranch = "main"
