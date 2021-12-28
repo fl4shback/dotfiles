@@ -6,7 +6,8 @@ read -r
 SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 BACKUP_DIR="$SCRIPT_DIR/backup"
 # SSH_DIR="$HOME/.ssh"
-CONFIG_DIR="$XDG_CONFIG_HOME"
+CONFIG_DIR="$HOME/.config"
+GNULN="$(brew --prefix)/opt/coreutils/libexec/gnubin/ln"
 APPS=(
     "https://dahuawiki.com/images/Files/Software/OSX/General_SMARTPSS-MAC_ChnEng_IS_V2.003.0000005.0.R.20210129.tar.gz"
     "https://www.dropbox.com/s/c51t7y5kh7za2kl/Deluge.app.7z"
@@ -50,16 +51,21 @@ fi
 
 #### DOWNLOAD APPS ####
 # Place urls in APPS array in GLOBAL VARIABLES
-for entry in "${APPS[@]}"
-do
-    echo "Downloading $entry"
-    curl -sSLO --output-dir "$HOME/Downloads" "$entry"
-done
+if [[ ! -f "$SCRIPT_DIR/Dl.lock" ]]; then
+    for entry in "${APPS[@]}"
+    do
+        echo "Downloading $entry"
+        curl -sSLO --output-dir "$HOME/Downloads" "$entry"
+    done
+    touch "$SCRIPT_DIR/Dl.lock"
+else
+    echo "Dl.lock file is present, skipping manual downloads"
+fi
 
 #### INSTALL DOTFILES ####
 # Create symlinks for dotfiles
 for file in "${DOTFILES[@]}"; do
-    ln -rs "$SCRIPT_DIR/$file" "$HOME/$file"
+    $GNULN -rs "$SCRIPT_DIR/$file" "$HOME/$file"
 done
 
 #### INSTALL ZSH FILES ####
@@ -69,11 +75,11 @@ if [[ ! -d "$CONFIG_DIR/zsh" ]]; then
 fi
 
 # Symlink home zshenv file
-ln -rs "$SCRIPT_DIR/.zshenv" "$HOME/.zshenv"
+$GNULN -rs "$SCRIPT_DIR/.zshenv" "$HOME/.zshenv"
 
 # Symlink other zsh files
 for file in "${ZSHFILES[@]}"; do
-    ln -rs "$SCRIPT_DIR/$file" "$CONFIG_DIR/zsh/$file"
+    $GNULN -rs "$SCRIPT_DIR/$file" "$CONFIG_DIR/zsh/$file"
 done
 
 # ZSH Plugins
@@ -83,8 +89,8 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$CONFIG_DIR/
 #### IMPORT & TRUST GPG KEYS ####
 if [[ -d "$BACKUP_DIR/gpg" ]]; then
     echo "Import and trust GPG Keys"
-    gpg --import-options restore --import "$BACKUP_DIR/private.gpg"
-    gpg --import-options restore --import "$BACKUP_DIR/public.gpg"
+    gpg --import-options restore --import "$BACKUP_DIR/gpg/private.gpg"
+    gpg --import-options restore --import "$BACKUP_DIR/gpg/public.gpg"
     PUBID=$(gpg --list-keys --keyid-format LONG | awk '/pub/{if (length($2) > 0) print $2}')
     SECID=$(gpg --list-secret-keys --keyid-format LONG | awk '/sec/{if (length($2) > 0) print $2}')
     expect -c "spawn gpg --edit-key ${PUBID##*/} trust quit; send ""5\ry\r""; expect eof"
