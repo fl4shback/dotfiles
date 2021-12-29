@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-echo "Bootstrap script for macOS. Please press any key to start."
-read -r
-
 #### GLOBAL VARIABLES ####
 SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 BACKUP_DIR="$SCRIPT_DIR/backup"
@@ -14,6 +11,12 @@ APPS=(
     "https://www.pixeleyes.co.nz/automounter/helper/AutoMounterHelper.dmg"
     "https://cherpake.com/downloads/Remote-for-Mac-6303.pkg.zip"
 )
+FONTS=(
+    "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf"
+    "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf"
+    "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf"
+    "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf"
+)
 DOTFILES=(
     ".tmux.conf"
     ".gitconfig"
@@ -25,14 +28,6 @@ ZSHFILES=(
 )
 
 #### HOMEBREW, XCODE TOOLS & MAS ####
-# Install Homebrew
-if [[ ! -f "$(which brew)" ]]; then
-    echo "Install Homebrew & Xcode Command Line Tools."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-else
-    echo "Homebrew is already installed, skipping."
-fi
-
 # Disable analytics
 if [[ "$(brew analytics state)" = "Analytics are disabled." ]]; then
     echo "Hombrew analytics are off."
@@ -103,3 +98,10 @@ if [[ -d "$BACKUP_DIR/.ssh" ]]; then
     echo "Import SSH Config & Keys"
     rsync -a "$BACKUP_DIR/.ssh" "$HOME"
 fi
+
+#### INSTALL FONTS ####
+for font in "${FONTS[@]}"; do
+    strip_url=${font##*/}
+    file_name=${strip_url//%20/ }
+    curl -sSL "$font" -o "$HOME/Library/Fonts/$file_name"
+done
