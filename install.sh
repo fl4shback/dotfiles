@@ -4,7 +4,8 @@ SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 BACKUP_DIR="$SCRIPT_DIR/backup"
 # SSH_DIR="$HOME/.ssh"
 CONFIG_DIR="$HOME/.config"
-GNULN="$(brew --prefix)/opt/coreutils/libexec/gnubin/ln"
+GNULN="$($BREW --prefix)/opt/coreutils/libexec/gnubin/ln"
+
 APPS=(
     "https://dahuawiki.com/images/Files/Software/OSX/General_SMARTPSS-MAC_ChnEng_IS_V2.003.0000005.0.R.20210129.tar.gz"
     "https://www.dropbox.com/s/c51t7y5kh7za2kl/Deluge.app.7z"
@@ -27,19 +28,25 @@ ZSHFILES=(
     ".extras"
 )
 
+if [[ $(uname -m) == "arm64" ]]; then
+    BREW="/opt/homebrew/bin/brew"
+else
+    BREW="/usr/local/bin/brew"
+fi
+
 #### BREW DISABLE ANALYTICS & INSTALL PACKAGES ####
 # Disable analytics
-if [[ "$(brew analytics state)" = "Analytics are disabled." ]]; then
+if [[ "$($BREW analytics state)" = "Analytics are disabled." ]]; then
     echo "Hombrew analytics are off."
 else
-    brew analytics off
+    $BREW analytics off
     echo "Disabled Hombrew analytics."
 fi
 
 # Install packages; casks and mas apps
 if [[ ! -f "$SCRIPT_DIR/Brewfile.lock.json" ]]; then
     echo "Installing Homebrew packages from Brewfile"
-    brew bundle install --file "$SCRIPT_DIR/Brewfile"
+    $BREW bundle install --file "$SCRIPT_DIR/Brewfile"
 else
     echo "Brewfile.lock exists, skipping brew packages installation"
 fi
