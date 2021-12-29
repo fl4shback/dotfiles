@@ -4,7 +4,6 @@ SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 BACKUP_DIR="$SCRIPT_DIR/backup"
 # SSH_DIR="$HOME/.ssh"
 CONFIG_DIR="$HOME/.config"
-GNULN="$($BREW --prefix)/opt/coreutils/libexec/gnubin/ln"
 
 APPS=(
     "https://dahuawiki.com/images/Files/Software/OSX/General_SMARTPSS-MAC_ChnEng_IS_V2.003.0000005.0.R.20210129.tar.gz"
@@ -25,28 +24,30 @@ DOTFILES=(
 ZSHFILES=(
     ".p10k.zsh"
     ".zshrc"
-    ".extras"
 )
 
 if [[ $(uname -m) == "arm64" ]]; then
-    BREW="/opt/homebrew/bin/brew"
+    export PATH=/opt/homebrew/opt/coreutils/libexec/gnubin:/opt/homebrew/bin:$PATH
 else
-    BREW="/usr/local/bin/brew"
+    export PATH=/usr/local/opt/coreutils/libexec/gnubin:$PATH
 fi
+
+GNULN="$(brew --prefix)/opt/coreutils/libexec/gnubin/ln"
+GNUPG="$(brew --prefix)/bin/gpg"
 
 #### BREW DISABLE ANALYTICS & INSTALL PACKAGES ####
 # Disable analytics
-if [[ "$($BREW analytics state)" = "Analytics are disabled." ]]; then
+if [[ "$(brew analytics state)" = "Analytics are disabled." ]]; then
     echo "Hombrew analytics are off."
 else
-    $BREW analytics off
+    brew analytics off
     echo "Disabled Hombrew analytics."
 fi
 
 # Install packages; casks and mas apps
 if [[ ! -f "$SCRIPT_DIR/Brewfile.lock.json" ]]; then
     echo "Installing Homebrew packages from Brewfile"
-    $BREW bundle install --file "$SCRIPT_DIR/Brewfile"
+    brew bundle install --file "$SCRIPT_DIR/Brewfile"
 else
     echo "Brewfile.lock exists, skipping brew packages installation"
 fi
@@ -67,7 +68,7 @@ fi
 #### INSTALL DOTFILES ####
 # Create symlinks for dotfiles
 for file in "${DOTFILES[@]}"; do
-    $GNULN -rs "$SCRIPT_DIR/$file" "$HOME/$file"
+    ln -rs "$SCRIPT_DIR/$file" "$HOME/$file"
 done
 
 #### INSTALL ZSH FILES ####
@@ -77,11 +78,11 @@ if [[ ! -d "$CONFIG_DIR/zsh" ]]; then
 fi
 
 # Symlink home zshenv file
-$GNULN -rs "$SCRIPT_DIR/.zshenv" "$HOME/.zshenv"
+ln -rs "$SCRIPT_DIR/.zshenv" "$HOME/.zshenv"
 
 # Symlink other zsh files
 for file in "${ZSHFILES[@]}"; do
-    $GNULN -rs "$SCRIPT_DIR/$file" "$CONFIG_DIR/zsh/$file"
+    ln -rs "$SCRIPT_DIR/$file" "$CONFIG_DIR/zsh/$file"
 done
 
 # ZSH Plugins
@@ -107,10 +108,10 @@ if [[ -d "$BACKUP_DIR/gpg" ]]; then
     echo "Import and trust GPG Keys"
     gpg --import-options restore --import "$BACKUP_DIR/gpg/private.gpg"
     gpg --import-options restore --import "$BACKUP_DIR/gpg/public.gpg"
-    PUBID=$(gpg --list-keys --keyid-format LONG | awk '/pub/{if (length($2) > 0) print $2}')
-    SECID=$(gpg --list-secret-keys --keyid-format LONG | awk '/sec/{if (length($2) > 0) print $2}')
-    expect -c "spawn gpg --edit-key ${PUBID##*/} trust quit; send ""5\ry\r""; expect eof"
-    expect -c "spawn gpg --edit-key ${SECID##*/} trust quit; send ""5\ry\r""; expect eof"
+    PUBID=$("gpg" --list-keys --keyid-format LONG | awk '/pub/{if (length($2) > 0) print $2}')
+    SECID=$("gpg" --list-secret-keys --keyid-format LONG | awk '/sec/{if (length($2) > 0) print $2}')
+    expect -c "spawn "gpg" --edit-key ${PUBID##*/} trust quit; send ""5\ry\r""; expect eof"
+    expect -c "spawn "gpg" --edit-key ${SECID##*/} trust quit; send ""5\ry\r""; expect eof"
 
 fi
 
@@ -122,11 +123,11 @@ fi
 
 #### SYMLINK .extras FILE ####
 if [[ -f $BACKUP_DIR/.extras ]]; then
-    $GNULN -rs "$BACKUP_DIR/.extras" "$CONFIG_DIR/zsh/.extras"
+    ln -rs "$BACKUP_DIR/.extras" "$CONFIG_DIR/zsh/.extras"
 fi
 
 #### SYMLINK karabiner FILE ####
 if [[ ! -d "$CONFIG_DIR/karabiner" ]]; then
     mkdir "$CONFIG_DIR/karabiner"
-    $GNULN -rs "$SCRIPT_DIR/karabiner.json" "$CONFIG_DIR/karabiner/karabiner.json"
+    ln -rs "$SCRIPT_DIR/karabiner.json" "$CONFIG_DIR/karabiner/karabiner.json"
 fi

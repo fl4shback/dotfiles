@@ -1,3 +1,11 @@
+
+### CUSTOM PATH ###
+if [[ $(uname -m) == "arm64" ]]; then
+  export PATH=/opt/homebrew/opt/coreutils/libexec/gnubin:/opt/homebrew/bin:$PATH
+else
+  export PATH=/usr/local/opt/coreutils/libexec/gnubin:$PATH
+fi
+
 ### START COMMANDS ###
  if [[ ! $(tmux list-sessions) ]]; then
    tmux
@@ -41,11 +49,6 @@ update () {
   fi
   softwareupdate -i -a --agree-to-license
 }
-
-
-### CUSTOM PATH ###
-PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
-
 
 ### SOURCE PLUGINS / THEMES ###
 source $ZDOTDIR/plugins/powerlevel10k/powerlevel10k.zsh-theme
