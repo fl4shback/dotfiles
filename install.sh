@@ -27,7 +27,7 @@ ZSHFILES=(
     ".extras"
 )
 
-#### HOMEBREW, XCODE TOOLS & MAS ####
+#### BREW DISABLE ANALYTICS & INSTALL PACKAGES ####
 # Disable analytics
 if [[ "$(brew analytics state)" = "Analytics are disabled." ]]; then
     echo "Hombrew analytics are off."
@@ -81,6 +81,20 @@ done
 git clone https://github.com/romkatv/powerlevel10k.git "$CONFIG_DIR/zsh/plugins/powerlevel10k"
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$CONFIG_DIR/zsh/plugins/zsh-syntax-highlighting"
 
+#### INSTALL FONTS ####
+for font in "${FONTS[@]}"; do
+    strip_url=${font##*/}
+    file_name=${strip_url//%20/ }
+    curl -sSL "$font" -o "$HOME/Library/Fonts/$file_name"
+done
+
+#### CHECK BACKUP DIR ####
+if [[ ! -d $BACKUP_DIR ]]; then
+    echo "Please import backup folder and press return to continue"
+    open "$SCRIPT_DIR"
+    read -r -n 1
+fi
+
 #### IMPORT & TRUST GPG KEYS ####
 if [[ -d "$BACKUP_DIR/gpg" ]]; then
     echo "Import and trust GPG Keys"
@@ -99,9 +113,13 @@ if [[ -d "$BACKUP_DIR/.ssh" ]]; then
     rsync -a "$BACKUP_DIR/.ssh" "$HOME"
 fi
 
-#### INSTALL FONTS ####
-for font in "${FONTS[@]}"; do
-    strip_url=${font##*/}
-    file_name=${strip_url//%20/ }
-    curl -sSL "$font" -o "$HOME/Library/Fonts/$file_name"
-done
+#### SYMLINK .extras FILE ####
+if [[ -f $BACKUP_DIR/.extras ]]; then
+    $GNULN -rs "$BACKUP_DIR/.extras" "$CONFIG_DIR/zsh/.extras"
+fi
+
+#### SYMLINK karabiner FILE ####
+if [[ ! -d "$CONFIG_DIR/karabiner" ]]; then
+    mkdir "$CONFIG_DIR/karabiner"
+    $GNULN -rs "$SCRIPT_DIR/karabiner.json" "$CONFIG_DIR/karabiner/karabiner.json"
+fi

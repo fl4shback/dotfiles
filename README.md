@@ -1,8 +1,8 @@
 ## Setup
-To run this project, run:
+To start bootstrap, run:
 
 ```
-mkdir $HOME/.config && curl -sL https://github.com/fl4shback/dotfiles/archive/main.tar.gz | tar -xz && mv dotfiles-main $HOME/.config/dotfiles
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/fl4shback/dotfiles/HEAD/preinstall.sh)"
 ```
-
-Don't forget to install backup folder before running.
+## Backup
+To generate backup folder to copy to new computer, run backup.sh
