@@ -27,10 +27,14 @@ alias lla="ls -la"
 alias ll="ls -l"
 alias ls="ls --color"
 alias plexupdate="ssh qnas docker restart plex"
-alias python="/usr/local/bin/python3"
+if [[ $(uname -m) == "arm64" ]]; then
+  alias python="/opt/homebrew/bin/python3"
+  alias pip="/opt/homebrew/bin/pip3"
+else
+  alias python="/usr/local/bin/python3"
+fi
 alias tree="tree -C"
 alias zshc="vi $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc"
-
 ### CUSTOM FUNCTIONS ###
 gitkraken () {
   dir="$(cd "$(dirname "$1")"; pwd -P)/$(basename "$1")"

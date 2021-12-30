@@ -6,7 +6,7 @@ BACKUP_DIR="$SCRIPT_DIR/backup"
 CONFIG_DIR="$HOME/.config"
 
 APPS=(
-    "https://dahuawiki.com/images/Files/Software/OSX/General_SMARTPSS-MAC_ChnEng_IS_V2.003.0000005.0.R.20210129.tar.gz"
+    "http://files.dahua.support/Oprogramowanie/SmartPSS%20Apple/General_SMARTPSS-MAC-arm64_ChnEng_IS_V2.003.0000006.0.R.20211213.tar.gz"
     "https://www.dropbox.com/s/c51t7y5kh7za2kl/Deluge.app.7z"
     "https://www.pixeleyes.co.nz/automounter/helper/AutoMounterHelper.dmg"
     "https://cherpake.com/downloads/Remote-for-Mac-6303.pkg.zip"
