@@ -7,3 +7,4 @@ backup
 
 #macOS Files
 .DS_Store
+.vscode

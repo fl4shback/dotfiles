@@ -20,6 +20,7 @@ FONTS=(
 DOTFILES=(
     ".tmux.conf"
     ".gitconfig"
+    ".vimrc"
 )
 ZSHFILES=(
     ".p10k.zsh"

@@ -7,9 +7,18 @@ else
 fi
 
 ### START COMMANDS ###
- if [[ ! $(tmux list-sessions) ]]; then
-   tmux
- fi
+if [ -z "$TMUX" ]; then
+  if [[ ! $(tmux list-sessions) ]]; then
+    tmux
+  else
+    #read -k "choice?Join tmux session ? (y/n):"
+    #if [[ $choice == "y" ]]; then
+    tmux a
+      #elif [[ $choice == "n" ]]; then
+        #:
+    #fi
+  fi
+fi
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -19,22 +28,24 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 ### ALIASES ###
-alias afk="osascript -e 'tell application \"System Events\" to keystroke \"q\" using {command down,control down}'"
-alias brewcun="brew uninstall --zap"
-alias kraken="gitkraken"
-alias la="ls -a"
-alias lla="ls -la"
-alias ll="ls -l"
-alias ls="ls --color"
-alias plexupdate="ssh qnas docker restart plex"
 if [[ $(uname -m) == "arm64" ]]; then
   alias python="/opt/homebrew/bin/python3"
   alias pip="/opt/homebrew/bin/pip3"
 else
   alias python="/usr/local/bin/python3"
 fi
+alias afk="osascript -e 'tell application \"System Events\" to keystroke \"q\" using {command down,control down}'"
+alias brewcun="brew uninstall --zap"
+alias kraken="gitkraken"
+alias la="ls -a"
+alias ll="ls -l"
+alias lla="ls -la"
+alias ls="ls --color"
+alias plexupdate="ssh qnas docker restart plex"
 alias tree="tree -C"
+alias vimc="vi $XDG_CONFIG_HOME/dotfiles/.vimrc"
 alias zshc="vi $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc"
+
 ### CUSTOM FUNCTIONS ###
 gitkraken () {
   dir="$(cd "$(dirname "$1")"; pwd -P)/$(basename "$1")"
