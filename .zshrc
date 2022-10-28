@@ -1,23 +1,26 @@
+OS=$(uname -s)
+ARCH=$(uname -m)
 
-### CUSTOM PATH ###
-if [[ $(uname -m) == "arm64" ]]; then
+### HOMEBREW CUSTOM PATH ###
+if [[ $OS = Darwin ]]; then
+  if [[ $ARCH = arm64  ]]; then
   export PATH=/opt/homebrew/opt/coreutils/libexec/gnubin:/opt/homebrew/bin:$PATH
+  fi
 else
   export PATH=/usr/local/opt/coreutils/libexec/gnubin:$PATH
 fi
 
 ### START COMMANDS ###
-if [ -z "$TMUX" ]; then
-  if [[ ! $(tmux list-sessions) ]]; then
+if [[ ! $TMUX ]]; then
+  if [[ -z $(tmux list-sessions 2> /dev/null) ]]; then
     tmux
   else
-    #read -k "choice?Join tmux session ? (y/n):"
-    #if [[ $choice == "y" ]]; then
     tmux a
-      #elif [[ $choice == "n" ]]; then
-        #:
-    #fi
   fi
+fi
+
+if [[ $(which neofetch) ]]; then
+  neofetch
 fi
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -28,25 +31,37 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 ### ALIASES ###
-if [[ $(uname -m) == "arm64" ]]; then
-  alias python="/opt/homebrew/bin/python3"
-  alias pip="/opt/homebrew/bin/pip3"
-else
-  alias python="/usr/local/bin/python3"
-fi
-alias afk="osascript -e 'tell application \"System Events\" to keystroke \"q\" using {command down,control down}'"
+# Commenting this out because it overrides python venv edits
+#if [[ $(uname -m) == "arm64" ]]; then
+  #alias python="/opt/homebrew/bin/python3"
+  #alias pip="/opt/homebrew/bin/pip3"
+#else
+  #alias python="/usr/local/bin/python3"
+#fi
 alias brewcun="brew uninstall --zap"
+alias chx="chmod +x"
+alias containers="ssh -t qnas 'cd /share/CACHEDEV1_DATA/Docker/; exec \$SHELL -l'"
+# alias edge="if [[ ! -z $(mount | awk '$3 == "/Volumes/QNAS" {print $3}') ]]; then sh /Volumes/QNAS/Web/edge.command; else echo \"Script not accessible.\"; fi"
 alias kraken="gitkraken"
 alias la="ls -a"
 alias ll="ls -l"
 alias lla="ls -la"
 alias ls="ls --color"
-alias plexupdate="ssh qnas docker restart plex"
+alias pip="pip3"
+alias plexupdate="ssh qnas docker restart plex plexp"
+alias python="python3"
 alias tree="tree -C"
 alias vimc="vi $XDG_CONFIG_HOME/dotfiles/.vimrc"
 alias zshc="vi $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc"
 
 ### CUSTOM FUNCTIONS ###
+edge () {
+  if [[ ! -z $(mount | awk '$3 == "/Volumes/QNAS" {print $3}') ]]; then 
+    sh /Volumes/QNAS/Web/edge.command
+  else 
+    echo "Script not accessible."
+  fi
+}
 gitkraken () {
   dir="$(cd "$(dirname "$1")"; pwd -P)/$(basename "$1")"
   open gitkraken://repo/$dir
