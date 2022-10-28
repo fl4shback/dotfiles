@@ -3,7 +3,6 @@ tap "homebrew/bundle"
 tap "homebrew/cask"
 tap "homebrew/cask-versions"
 tap "homebrew/core"
-brew "python@3.9"
 brew "coreutils"
 brew "ffmpeg"
 brew "gnupg"
@@ -13,6 +12,7 @@ brew "mosh"
 brew "ncdu"
 brew "neofetch"
 brew "node"
+brew "python@3.9"
 brew "shellcheck"
 brew "tmux"
 brew "tree"
@@ -37,9 +37,7 @@ cask "setapp"
 cask "visual-studio-code"
 mas "AdGuard for Safari", id: 1440147259
 mas "AutoMounter", id: 1160435653
-mas "Aviary", id: 1522043420
 mas "Dato", id: 1470584107
-mas "HACK", id: 1464477788
 mas "Infuse", id: 1136220934
 mas "Keka", id: 470158793
 mas "Keynote", id: 409183694
@@ -54,7 +52,6 @@ mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
 mas "Peek", id: 1554235898
 mas "Spark", id: 1176895641
-mas "Strongbox", id: 1270075435
-mas "Telegram", id: 747648890
+mas "Strongbox", id: 897283731
 mas "Tweetbot", id: 557168941
 mas "Userscripts", id: 1463298887
