@@ -6,8 +6,6 @@ BACKUP_DIR="$SCRIPT_DIR/backup"
 CONFIG_DIR="$HOME/.config"
 
 APPS=(
-    "http://files.dahua.support/Oprogramowanie/SmartPSS%20Apple/General_SMARTPSS-MAC-arm64_ChnEng_IS_V2.003.0000006.0.R.20211213.tar.gz"
-    "https://www.dropbox.com/s/c51t7y5kh7za2kl/Deluge.app.7z"
     "https://www.pixeleyes.co.nz/automounter/helper/AutoMounterHelper.dmg"
     "https://cherpake.com/downloads/Remote-for-Mac-6303.pkg.zip"
 )
@@ -20,6 +18,7 @@ FONTS=(
 DOTFILES=(
     ".tmux.conf"
     ".gitconfig"
+    ".gitconfig_fl4shforward"
     ".vimrc"
 )
 ZSHFILES=(
@@ -27,43 +26,54 @@ ZSHFILES=(
     ".zshrc"
 )
 
-if [[ $(uname -m) == "arm64" ]]; then
-    export PATH=/opt/homebrew/opt/coreutils/libexec/gnubin:/opt/homebrew/bin:$PATH
-else
-    export PATH=/usr/local/opt/coreutils/libexec/gnubin:$PATH
-fi
+#### macOS Specifics ####
+if [[ $OSTYPE =~ ^darwin ]]; then
+    #### GLOBAL VARIABLES OVERRIDE ####
+    FONT_FOLDER="$HOME/Library/Fonts"
 
-GNULN="$(brew --prefix)/opt/coreutils/libexec/gnubin/ln"
-GNUPG="$(brew --prefix)/bin/gpg"
+    # Export brew paths needed to access GNU ls & gpg
+    if [[ $(uname -m) == "arm64" ]]; then
+        export PATH=/opt/homebrew/opt/coreutils/libexec/gnubin:/opt/homebrew/bin:$PATH
+    else
+        export PATH=/usr/local/opt/coreutils/libexec/gnubin:$PATH
+    fi
 
-#### BREW DISABLE ANALYTICS & INSTALL PACKAGES ####
-# Disable analytics
-if [[ "$(brew analytics state)" = "Analytics are disabled." ]]; then
-    echo "Hombrew analytics are off."
-else
-    brew analytics off
-    echo "Disabled Hombrew analytics."
-fi
+    # GNULN="$(brew --prefix)/opt/coreutils/libexec/gnubin/ln"
+    # GNUPG="$(brew --prefix)/bin/gpg"
 
-# Install packages; casks and mas apps
-if [[ ! -f "$SCRIPT_DIR/Brewfile.lock.json" ]]; then
-    echo "Installing Homebrew packages from Brewfile"
-    brew bundle install --file "$SCRIPT_DIR/Brewfile"
-else
-    echo "Brewfile.lock exists, skipping brew packages installation"
-fi
+    #### BREW DISABLE ANALYTICS & INSTALL PACKAGES ####
+    # Disable analytics
+    if [[ "$(brew analytics state)" =~ enabled ]]; then
+        brew analytics off
+        echo "Disabled Hombrew analytics."
+    fi
 
-#### DOWNLOAD APPS ####
-# Place urls in APPS array in GLOBAL VARIABLES
-if [[ ! -f "$SCRIPT_DIR/Dl.lock" ]]; then
-    for entry in "${APPS[@]}"
-    do
-        echo "Downloading $entry"
-        curl -sSLO --output-dir "$HOME/Downloads" "$entry"
-    done
-    touch "$SCRIPT_DIR/Dl.lock"
-else
-    echo "Dl.lock file is present, skipping manual downloads"
+    # Install packages; casks and mas apps
+    if [[ ! -f "$SCRIPT_DIR/Brewfile.lock.json" ]]; then
+        echo "Installing Homebrew packages from Brewfile"
+        brew bundle install --file "$SCRIPT_DIR/Brewfile"
+    else
+        echo "Brewfile.lock exists, skipping brew packages installation"
+    fi
+
+    #### DOWNLOAD APPS ####
+    # Place urls in APPS array in GLOBAL VARIABLES
+    if [[ ! -f "$SCRIPT_DIR/Apps.lock" ]]; then
+        for entry in "${APPS[@]}"
+        do
+            echo "Downloading $entry"
+            curl -sSLO --output-dir "$HOME/Downloads" "$entry"
+        done
+        touch "$SCRIPT_DIR/Apps.lock"
+    else
+        echo "Apps.lock file is present, skipping manual downloads"
+    fi
+
+    #### SYMLINK karabiner FILE ####
+    if [[ ! -d "$CONFIG_DIR/karabiner" ]]; then
+        mkdir "$CONFIG_DIR/karabiner"
+        ln -rs "$SCRIPT_DIR/karabiner.json" "$CONFIG_DIR/karabiner/karabiner.json"
+    fi
 fi
 
 #### INSTALL DOTFILES ####
@@ -94,7 +104,7 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$CONFIG_DIR/
 for font in "${FONTS[@]}"; do
     strip_url=${font##*/}
     file_name=${strip_url//%20/ }
-    curl -sSL "$font" -o "$HOME/Library/Fonts/$file_name"
+    curl -sSL "$font" -o "${FONT_FOLDER:=/usr/local/share/fonts}/$file_name"
 done
 
 #### CHECK BACKUP DIR ####
@@ -125,10 +135,4 @@ fi
 #### SYMLINK .extras FILE ####
 if [[ -f $BACKUP_DIR/.extras ]]; then
     ln -rs "$BACKUP_DIR/.extras" "$CONFIG_DIR/zsh/.extras"
-fi
-
-#### SYMLINK karabiner FILE ####
-if [[ ! -d "$CONFIG_DIR/karabiner" ]]; then
-    mkdir "$CONFIG_DIR/karabiner"
-    ln -rs "$SCRIPT_DIR/karabiner.json" "$CONFIG_DIR/karabiner/karabiner.json"
 fi

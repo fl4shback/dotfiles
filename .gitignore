@@ -1,6 +1,6 @@
 #Project related files
 Brewfile.lock.json
-Dl.lock
+Apps.lock
 tests.sh
 .extras
 backup

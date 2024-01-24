@@ -1,8 +1,13 @@
-[gpg]
-	program = gpg
 [commit]
 	gpgSign = true
 [tag]
+	gpgSign = true
 	forceSignAnnotated = true
 [init]
-	defaultBranch = "main"
+	defaultBranch = main
+[user]
+	name = fl4shback
+	email = 57314569+fl4shback@users.noreply.github.com
+	signingkey = 4163438FB66D4FF1
+[includeIf "gitdir/i:~/projets/fl4shforward/"]
+	path = ~/.gitconfig_fl4shforward

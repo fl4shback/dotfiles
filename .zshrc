@@ -48,11 +48,14 @@ alias ll="ls -l"
 alias lla="ls -la"
 alias ls="ls --color"
 alias pip="pip3"
-alias plexupdate="ssh qnas docker restart plex plexp"
 alias python="python3"
 alias tree="tree -C"
 alias vimc="vi $XDG_CONFIG_HOME/dotfiles/.vimrc"
 alias zshc="vi $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc"
+# if [[ $(echo /etc/hostname) == "MBP-de-Victor" ]]; then
+alias rapprochement="bash /Users/victor/Documents/Scripts/rapprochement.sh"
+alias virement="bash /Users/victor/Documents/Scripts/virements.sh"
+# fi
 
 ### CUSTOM FUNCTIONS ###
 edge () {
@@ -79,7 +82,11 @@ update () {
   fi
   softwareupdate -i -a --agree-to-license
 }
-
+mcdir ()
+{
+    mkdir -p -- "$1" &&
+    cd -P -- "$1"
+}
 ### SOURCE PLUGINS / THEMES ###
 source $ZDOTDIR/plugins/powerlevel10k/powerlevel10k.zsh-theme
 

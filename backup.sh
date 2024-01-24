@@ -2,28 +2,22 @@
 
 #### GLOBAL VARIABLES ####
 SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
-echo "$SCRIPT_DIR"
 BACKUP_DIR="$SCRIPT_DIR/backup"
 SSH_DIR="$HOME/.ssh"
 
-#### DUMP Brewfile ####
-echo "Dumping Brewfile"
-brew bundle dump --force --file "$SCRIPT_DIR/Brewfile"
+#### DUMP Brewfile if macOS ####
+if [[ $OSTYPE =~ ^darwin ]]; then
+    echo "Dumping Brewfile"
+    brew bundle dump --force --file "$SCRIPT_DIR/Brewfile"
+fi
 
 #### BACKUP GPG KEYS ####
-# Check if backup folder exists, if not, creates it
+# Creates backup folder if needed, deletes old backup if existing
 if [[ ! -d "$BACKUP_DIR/gpg" ]]; then
     mkdir "$BACKUP_DIR/gpg"
-fi
-
-# Deletes old backups if existing
-if [[ -f "$BACKUP_DIR/gpg/private.gpg" ]]; then
- rm "$BACKUP_DIR/gpg/private.gpg"
- echo "Delete old private GPG key backup"
-fi
-if [[ -f "$BACKUP_DIR/gpg/public.gpg" ]]; then
- rm "$BACKUP_DIR/gpg/public.gpg"
- echo "Delete old public GPG key backup"
+else
+    find "$BACKUP_DIR/gpg" -name "*.gpg" -delete
+    echo "Delete old GPG keys backup"
 fi
 
 # Back up gpg keys
