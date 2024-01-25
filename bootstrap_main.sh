@@ -25,7 +25,7 @@ ZSHFILES=(
     ".zshrc"
 )
 
-function cross_open () {
+cross_open() {
 # Takes 2 args $1 is path $2 is message to display in tty
     if [[ $OSTYPE =~ ^darwin ]]; then
         echo "${2}"

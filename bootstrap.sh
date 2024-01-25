@@ -11,23 +11,29 @@ if [[ $OSTYPE =~ ^darwin ]] && ! type brew >/dev/null 2>&1; then
 fi
 
 #### Linux INSTALL GIT IF NEEDED ####
-# Inspired from https://ilhicas.com/2018/08/08/bash-script-to-install-packages-multiple-os.html
-function install_package () {
-    declare -A osInfo;
-    osInfo[/etc/debian_version]="apt-get install -y"
-    osInfo[/etc/alpine-release]="apk --update add"
-    osInfo[/etc/centos-release]="yum install -y"
-    osInfo[/etc/fedora-release]="dnf install -y"
-
-    for f in "${!osInfo[@]}"
-    do
-        if [[ -f $f ]];then
-            package_manager=${osInfo[$f]}
-        fi
-    done
-
-    sudo "$package_manager" "$@"
+install_package() {
+    # Check the Linux distribution
+    if type apt-get &> /dev/null; then
+        # Debian-based
+        sudo apt-get install -y "$@"
+    elif type dnf &> /dev/null; then
+        # Fedora-based
+        sudo dnf install -y "$@"
+    elif type yum &> /dev/null; then
+        # Red Hat-based
+        sudo yum install -y "$@"
+    elif type apk &> /dev/null; then
+        # Alpine Linux
+        sudo apk add --no-cache "$@"
+    elif type pacman &> /dev/null; then
+        # Arch-based
+        sudo pacman -Syu --noconfirm "$@"
+    else
+        echo "Error: Unsupported Linux distribution. Please install packages manually."
+        return 1
+    fi
 }
+
 if ! type git >/dev/null 2>&1; then
     install_package git
 fi
