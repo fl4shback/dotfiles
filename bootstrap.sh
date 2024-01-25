@@ -5,7 +5,7 @@ read -r -n 1
 #### macOS INSTALL BREW & XCODE TOOLS ####
 # macOS doesn't come with git preinstalled, we need to install XCode Command Line Tools
 # This is handled automatically by the Brew install which is needed later anyway
-if [[ $OSTYPE =~ ^darwin ]] && [[ ! -f "$(which brew)" ]]; then
+if [[ $OSTYPE =~ ^darwin ]] && ! type brew >/dev/null 2>&1; then
     echo "Install Homebrew & Xcode Command Line Tools."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
@@ -28,7 +28,7 @@ function install_package () {
 
     $package_manager "$@"
 }
-if [[ -z $(which git) ]]; then
+if ! type git >/dev/null 2>&1; then
     install_package git
 fi
 
