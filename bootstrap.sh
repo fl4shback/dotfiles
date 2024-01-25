@@ -26,7 +26,7 @@ function install_package () {
         fi
     done
 
-    $package_manager "$@"
+    sudo "$package_manager" "$@"
 }
 if ! type git >/dev/null 2>&1; then
     install_package git
