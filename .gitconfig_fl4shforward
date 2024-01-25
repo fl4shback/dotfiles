@@ -1,0 +1,11 @@
+[commit]
+	gpgSign = false
+[core]
+	sshCommand = "ssh -i ~/.ssh/gh-ff"
+[tag]
+	forceSignAnnotated = false
+	gpgSign = false
+[user]
+	name = fl4shforward
+	email = 93709591+fl4shforward@users.noreply.github.com
+	signingkey =

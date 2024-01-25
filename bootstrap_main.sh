@@ -2,7 +2,6 @@
 #### GLOBAL VARIABLES ####
 SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 BACKUP_DIR="$SCRIPT_DIR/backup"
-# SSH_DIR="$HOME/.ssh"
 CONFIG_DIR="$HOME/.config"
 
 APPS=(
@@ -25,6 +24,19 @@ ZSHFILES=(
     ".p10k.zsh"
     ".zshrc"
 )
+
+function cross_open () {
+# Takes 2 args $1 is path $2 is message to display in tty
+    if [[ $OSTYPE =~ ^darwin ]]; then
+        echo "${2}"
+        open "${1}"
+    elif [[ -z $DISPLAY && -z $WAYLAND_DISPLAY ]];then
+        echo "${2}${1}"
+    else
+        echo "${2}"
+        xdg-open "${1}"
+    fi
+}
 
 #### macOS Specifics ####
 if [[ $OSTYPE =~ ^darwin ]]; then
@@ -104,13 +116,12 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$CONFIG_DIR/
 for font in "${FONTS[@]}"; do
     strip_url=${font##*/}
     file_name=${strip_url//%20/ }
-    curl -sSL "$font" -o "${FONT_FOLDER:=/usr/local/share/fonts}/$file_name"
+    sudo curl -sSL "$font" --create-dirs --output "${FONT_FOLDER:=/usr/local/share/fonts}/$file_name"
 done
 
 #### CHECK BACKUP DIR ####
 if [[ ! -d $BACKUP_DIR ]]; then
-    echo "Please import backup folder and press return to continue"
-    open "$SCRIPT_DIR"
+    cross_open "$SCRIPT_DIR" "Please import backup folder and press return to continue: "
     read -r -n 1
 fi
 
