@@ -19,7 +19,7 @@ if [[ ! $TMUX ]]; then
   fi
 fi
 
-if [[ $(which neofetch) ]]; then
+if [[ $(type neofetch) ]]; then
   neofetch
 fi
 
@@ -40,8 +40,6 @@ fi
 #fi
 alias brewcun="brew uninstall --zap"
 alias chx="chmod +x"
-alias containers="ssh -t qnas 'cd /share/CACHEDEV1_DATA/Docker/; exec \$SHELL -l'"
-# alias edge="if [[ ! -z $(mount | awk '$3 == "/Volumes/QNAS" {print $3}') ]]; then sh /Volumes/QNAS/Web/edge.command; else echo \"Script not accessible.\"; fi"
 alias kraken="gitkraken"
 alias la="ls -a"
 alias ll="ls -l"

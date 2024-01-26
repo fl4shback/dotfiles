@@ -4,6 +4,8 @@ PACKAGES=(
     "rsync"
     "git"
     "zsh"
+    "neofetch"
+    "tmux"
 )
 
 install_package() {

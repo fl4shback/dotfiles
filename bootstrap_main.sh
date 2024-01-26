@@ -115,6 +115,9 @@ for font in "${FONTS[@]}"; do
     strip_url=${font##*/}
     file_name=${strip_url//%20/ }
     sudo curl -sSL "$font" --create-dirs --output "${FONT_FOLDER:=/usr/local/share/fonts}/$file_name"
+    if [[ -z "$FONT_FOLDER" ]]; then
+        sudo chmod r+x /usr/local/share/fonts
+    fi
 done
 
 #### CHECK BACKUP DIR ####
