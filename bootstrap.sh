@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+CONFIG_DIR="$HOME/.config"
 PACKAGES=(
     "expect"
     "rsync"
@@ -59,14 +60,10 @@ if [[ "${#installpack[@]}" -gt 0 ]]; then
 fi
 
 #### CREATE DIRS, CLONE REPO & START MAIN INSTALL SCRIPT ####
-# Should not be needed
-# if [[ ! -d "$HOME/.config/dotfiles" ]]; then
-#     mkdir "$HOME/.config/dotfiles"
-# fi
-if [[ ! -d "$SCRIPT_DIR/.git" ]]; then
+if [[ ! -d "$CONFIG_DIR/dotfiles/.git" ]]; then
     git clone https://github.com/fl4shback/dotfiles.git "$HOME/.config/dotfiles"
 else
-    git -C "$SCRIPT_DIR" fetch && git -C "$SCRIPT_DIR" pull
+    git -C "$CONFIG_DIR/dotfiles/" fetch && git -C "$CONFIG_DIR/dotfiles/" pull
 fi
 
 # shellcheck disable=SC1091
