@@ -4,10 +4,12 @@ SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 BACKUP_DIR="$SCRIPT_DIR/backup"
 CONFIG_DIR="$HOME/.config"
 
+# Apps to download that are not tracker by package managers
 APPS=(
     "https://www.pixeleyes.co.nz/automounter/helper/AutoMounterHelper.dmg"
-    "https://cherpake.com/downloads/Remote-for-Mac-6303.pkg.zip"
+    "https://downloads.cherpake.com/Remote-for-Mac-7513.pkg.zip"
 )
+# Fonts needed for zsh theme powerlevel10k
 FONTS=(
     "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf"
     "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf"
@@ -26,7 +28,7 @@ ZSHFILES=(
 )
 
 cross_open() {
-# Takes 2 args $1 is path $2 is message to display in tty
+    # Takes 2 args $1 is path $2 is message to display in tty
     if [[ $OSTYPE =~ ^darwin ]]; then
         echo "${2}"
         open "${1}"
@@ -50,9 +52,6 @@ if [[ $OSTYPE =~ ^darwin ]]; then
         export PATH=/usr/local/opt/coreutils/libexec/gnubin:$PATH
     fi
 
-    # GNULN="$(brew --prefix)/opt/coreutils/libexec/gnubin/ln"
-    # GNUPG="$(brew --prefix)/bin/gpg"
-
     #### BREW DISABLE ANALYTICS & INSTALL PACKAGES ####
     # Disable analytics
     if [[ "$(brew analytics state)" =~ enabled ]]; then
@@ -60,7 +59,7 @@ if [[ $OSTYPE =~ ^darwin ]]; then
         echo "Disabled Hombrew analytics."
     fi
 
-    # Install packages; casks and mas apps
+    # Install packages, casks and mas apps
     if [[ ! -f "$SCRIPT_DIR/Brewfile.lock.json" ]]; then
         echo "Installing Homebrew packages from Brewfile"
         brew bundle install --file "$SCRIPT_DIR/Brewfile"
@@ -69,7 +68,6 @@ if [[ $OSTYPE =~ ^darwin ]]; then
     fi
 
     #### DOWNLOAD APPS ####
-    # Place urls in APPS array in GLOBAL VARIABLES
     if [[ ! -f "$SCRIPT_DIR/Apps.lock" ]]; then
         for entry in "${APPS[@]}"
         do
@@ -141,6 +139,8 @@ fi
 if [[ -d "$BACKUP_DIR/.ssh" ]]; then
     echo "Import SSH Config & Keys"
     rsync -a "$BACKUP_DIR/.ssh" "$HOME"
+    # Since ssh keys are deployed, we can update the repo url to use ssh
+    git -C "$SCRIPT_DIR" remote set-url origin git@github.com:fl4shback/dotfiles.git
 fi
 
 #### SYMLINK .extras FILE ####
