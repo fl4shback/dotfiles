@@ -9,5 +9,41 @@
 	name = fl4shback
 	email = 57314569+fl4shback@users.noreply.github.com
 	signingkey = 4163438FB66D4FF1
+[core]
+	autocrlf = input
+[pull]
+	rebase = false
+[push]
+	default = simple
+	autoSetupRemote = true
+[fetch]
+	prune = true
+[rebase]
+	autoStash = true
+[merge]
+	conflictstyle = zdiff3
+[diff]
+	algorithm = histogram
+	colorMoved = default
+[log]
+	date = relative
+[color]
+	ui = auto
+[transfer]
+	fsckObjects = true
+[rerere]
+	enabled = true
+[help]
+	autocorrect = 10
+[alias]
+	st = status -sb
+	co = checkout
+	br = branch
+	ci = commit
+	lg = log --oneline --graph --decorate --all
+	unstage = reset HEAD --
+	last = log -1 HEAD
+	amend = commit --amend --no-edit
+	undo = reset --soft HEAD^
 [includeIf "gitdir/i:~/projets/fl4shforward/"]
 	path = ~/.gitconfig_fl4shforward

@@ -1,33 +1,40 @@
 #!/usr/bin/env bash
+
+# Check if running as root
+if [[ $EUID -eq 0 ]]; then
+   echo "Error: This script should not be run as root"
+   echo "Package managers will request sudo when needed"
+   exit 1
+fi
+
 CONFIG_DIR="$HOME/.config"
 PACKAGES=(
     "expect"
     "rsync"
     "git"
     "zsh"
-    "neofetch"
-    "tmux"
+    "fastfetch"
 )
 
 install_package() {
-    if type brew &> /dev/null; then
+    if command -v brew &> /dev/null; then
         # macOS
         brew install "$@"
-    elif type apt-get &> /dev/null; then
+    elif command -v apt-get &> /dev/null; then
         # Debian-based
         sudo apt-get install -y "$@"
-    elif type dnf &> /dev/null; then
+    elif command -v dnf &> /dev/null; then
         # Fedora-based
         sudo dnf install -y "$@"
-    elif type yum &> /dev/null; then
+    elif command -v yum &> /dev/null; then
         # Red Hat-based
         sudo yum install -y "$@"
-    elif type apk &> /dev/null; then
+    elif command -v apk &> /dev/null; then
         # Alpine Linux
         sudo apk add --no-cache "$@"
-    elif type pacman &> /dev/null; then
+    elif command -v pacman &> /dev/null; then
         # Arch-based
-        sudo pacman -Syu --noconfirm "$@"
+        sudo pacman -S --noconfirm "$@"
     else
         echo "Error: Unsupported Package manager, please update script."
         return 1
@@ -40,23 +47,24 @@ read -r -n 1
 #### macOS INSTALL BREW & XCODE TOOLS ####
 # macOS doesn't come with git preinstalled, we need to install XCode Command Line Tools
 # This is handled automatically by the Brew install which is needed later anyway
-if [[ $OSTYPE =~ ^darwin ]] && ! type brew >/dev/null 2>&1; then
+if [[ $OSTYPE =~ ^darwin ]] && ! command -v brew >/dev/null 2>&1; then
     echo "Install Homebrew & Xcode Command Line Tools."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    if ! /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+        echo "Error: Homebrew installation failed"
+        exit 1
+    fi
 fi
 
 #### INSTALL NEEDED PACKAGES ####
+installpack=()
 for package in "${PACKAGES[@]}"; do
-    if ! type "$package" >/dev/null 2>&1; then
+    if ! command -v "$package" >/dev/null 2>&1; then
         installpack+=("$package")
-    else
-        echo "already present $package"
     fi
 done
 
 if [[ "${#installpack[@]}" -gt 0 ]]; then
     install_package "${installpack[@]}"
-    unset installpack
 fi
 
 #### CREATE DIRS, CLONE REPO & START MAIN INSTALL SCRIPT ####
